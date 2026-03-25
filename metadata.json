@@ -1,0 +1,5 @@
+{
+  "name": "TokenGate Verification",
+  "description": "Minimal wallet verification page for TokenGate.",
+  "requestFramePermissions": []
+}
