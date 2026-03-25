@@ -48,17 +48,18 @@ export default function App() {
 
       setStatus('success');
       
-      // Redirect to Telegram bot DM
-      setTimeout(() => {
-        window.location.href = `https://t.me/tokengate1?start=${code}_${walletAddress}`;
-      }, 1000);
+     // Redirect to Telegram bot DM
+setTimeout(() => {
+  window.location.href = `https://t.me/tokengate1bot?start=${code}_${walletAddress}`;
+}, 1000);
 
-    } catch (err: any) {
-      console.error(err);
-      setStatus('error');
-      setErrorMessage(err.message || 'An unexpected error occurred.');
-    }
-  };
+} catch (err: any) {
+  console.error(err);
+  setStatus('error');
+  setErrorMessage(err.message || 'An unexpected error occurred.');
+}
+};
+
 
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-50 flex flex-col items-center justify-center p-4 font-sans selection:bg-zinc-800">
