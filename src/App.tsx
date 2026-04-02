@@ -46,7 +46,7 @@ const waitForProvider = (maxAttempts = 10, interval = 200): Promise<any> => {
 };
 
 export default function App() {
-  const [status, setStatus] = useState<'idle' | 'connecting' | 'signing' | 'success' | 'error'>('idle');
+  const [status, setStatus] = useState<'idle' | 'connecting' | 'signing' | 'verifying' | 'success' | 'insufficient' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
   const [code, setCode] = useState<string | null>(null);
   const [hasPhantom, setHasPhantom] = useState<boolean | null>(null);
@@ -119,7 +119,7 @@ export default function App() {
       await provider.signMessage(encodedMessage, 'utf8');
 
       // POST to webhook instead of redirecting
-      setStatus('verifying' as any);
+      setStatus('verifying');
       
       const webhookUrl = import.meta.env.VITE_WEBHOOK_URL || 'https://shisho07bot.ori.bot/tokengate/verify';
       const response = await fetch(webhookUrl, {
@@ -128,6 +128,11 @@ export default function App() {
         body: JSON.stringify({ code, wallet: walletAddress })
       });
       
+      if (!response.ok && response.status !== 200) {
+        const errorText = await response.text();
+        throw new Error(`Server error: ${errorText}`);
+      }
+      
       const result = await response.json();
       
       if (result.success && result.verified) {
@@ -135,7 +140,7 @@ export default function App() {
         setVerifyResult(result);
       } else if (result.success && !result.verified) {
         // Insufficient balance - not an error, just didn't qualify
-        setStatus('insufficient' as any);
+        setStatus('insufficient');
         setVerifyResult(result);
       } else {
         throw new Error(result.error || 'Verification failed');
@@ -239,7 +244,7 @@ export default function App() {
                 Return to Telegram →
               </a>
             </div>
-          ) : status === ('insufficient' as any) ? (
+          ) : status === 'insufficient' ? (
             <div className="flex flex-col items-center justify-center py-4 gap-3 text-amber-400">
               <AlertCircle className="w-8 h-8" />
               <p className="font-medium">Insufficient Balance</p>
