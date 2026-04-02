@@ -134,7 +134,9 @@ export default function App() {
         setStatus('success');
         setVerifyResult(result);
       } else if (result.success && !result.verified) {
-        throw new Error(`Insufficient balance. You have ${result.balance?.toFixed(2) || 0} ${result.asset_type || 'tokens'}, need ${result.required || '?'}.`);
+        // Insufficient balance - not an error, just didn't qualify
+        setStatus('insufficient' as any);
+        setVerifyResult(result);
       } else {
         throw new Error(result.error || 'Verification failed');
       }
@@ -230,6 +232,24 @@ export default function App() {
                   Balance: {verifyResult.balance?.toFixed(2)} {verifyResult.asset_type}
                 </p>
               )}
+              <a 
+                href="https://t.me/tokengate1bot"
+                className="mt-2 bg-zinc-800 hover:bg-zinc-700 transition-colors py-2 px-4 rounded-lg text-sm text-zinc-200"
+              >
+                Return to Telegram →
+              </a>
+            </div>
+          ) : status === ('insufficient' as any) ? (
+            <div className="flex flex-col items-center justify-center py-4 gap-3 text-amber-400">
+              <AlertCircle className="w-8 h-8" />
+              <p className="font-medium">Insufficient Balance</p>
+              {verifyResult && (
+                <div className="text-center text-sm text-zinc-400">
+                  <p>Your balance: {verifyResult.balance?.toFixed(2)} {verifyResult.asset_type}</p>
+                  <p>Required: {verifyResult.required?.toFixed(2)} {verifyResult.asset_type}</p>
+                </div>
+              )}
+              <p className="text-xs text-zinc-500 mt-2">Get more tokens and try again!</p>
               <a 
                 href="https://t.me/tokengate1bot"
                 className="mt-2 bg-zinc-800 hover:bg-zinc-700 transition-colors py-2 px-4 rounded-lg text-sm text-zinc-200"
